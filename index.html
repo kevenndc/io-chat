@@ -12,13 +12,38 @@
   <script src="/socket.io/socket.io.js"></script>
   <title>Document</title>
 </head>
+<style>
+  body {
+    margin-top: 30px;
+  }
+
+  #messageArea {
+    display: none;
+  }
+
+  ul {
+    list-style: none;
+  }
+</style>
 <body>
   <div class="container">
-    <div class="row">
+    <div id="userFormArea" class="row">
+      <div class="col-md-12">
+        <form action="" id="userForm">
+          <div class="form-group">
+            <label for="">Insira o nome de usuário</label>
+            <input type="text" class="form-control" name="message" id="username" >
+            <br>
+            <input type="submit" class="btn btn-primary" value="Entrar">
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row" id="messageArea">
       <div class="col-md-4">
         <div class="card">
           <h3>Online Users</h3>
-          <ul class="list-group" id="Users">
+          <ul class="list-group" id="users">
 
           </ul>
         </div>
@@ -27,10 +52,10 @@
         <div class="chat" id="chat"></div>
         <form action="" id="message-form">
           <div class="form-group">
-            <label for="">Enter message</label>
+            <label for="">Digite sua mensagem</label>
             <textarea class="form-control" name="message" id="message" cols="30" rows="10"></textarea>
             <br>
-            <input type="submit" class="btn btn-primary" value="Send message">
+            <input type="submit" class="btn btn-primary" value="Enviar">
           </div>
         </form>
       </div>
@@ -39,10 +64,15 @@
 
   <script>
     $(function() {
-      var socket = io.connect()
-      var $messageForm = $('#message-form')
-      var $message = $('#message')
-      var $chat = $('#chat')
+      const socket = io.connect()
+      const $messageForm = $('#message-form')
+      const $message = $('#message')
+      const $chat = $('#chat')
+
+      const $userForm = $('#userForm')
+      const $userFormArea = $('#userFormArea')
+      const $username = $('#username')
+      const $users = $('#users')
 
       $messageForm.submit(e => {
         e.preventDefault()
@@ -52,7 +82,23 @@
       })
 
       socket.on('new message', data => {
-        $chat.append(`<div class="card bg-light">${data.msg}</div>`)
+        $chat.append(`<div class="bg-light"><b>${data.user}</b>: ${data.msg}</div>`)
+      })
+
+      $userForm.submit(e => {
+        e.preventDefault()
+        console.log('user logged in')
+        socket.emit('user logged in', $username.val())
+        $userFormArea.hide()
+        $('#messageArea').show()
+      })
+
+      socket.on('get users', users => {
+        $users.html(
+          users.map(user => {
+            return `<li>${user}</li>`
+          }).join('')
+        ) 
       })
     })
   </script>

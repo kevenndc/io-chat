@@ -18,12 +18,29 @@ io.on('connection', socket => {
 
   socket.on('disconnect', data => {
     //Disconnect
+    if (socket.username)  {
+      users.splice(users.indexOf(socket.username))
+      updateUsernames()
+    }
+
     connections.splice(connections.indexOf(socket), 1)
     console.log(`Disconnected: ${connections.length} sockets connected`)
   })
 
   socket.on('send message', data => {
     console.log(`mensagem: ${data}`)
-    io.sockets.emit('new message', {msg : data})
+    io.sockets.emit('new message', {msg : data, user : socket.username})
   })
+
+  socket.on('user logged in', data => {
+    console.log(`${data} está logado`)
+    socket.username = data
+    users.push(data)
+    updateUsernames()
+  })
+
+  function updateUsernames() {
+    io.sockets.emit('get users', users)
+  }
+
 })
