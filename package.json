@@ -1,0 +1,11 @@
+{
+  "name": "io-chat",
+  "version": "1.0.0",
+  "description": "A chat app made using SocketIo and Express",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kevenn Caterinque",
+  "license": "ISC"
+}
